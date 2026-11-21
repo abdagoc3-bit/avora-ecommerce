@@ -1,0 +1,115 @@
+.signup-card {
+    background: #ffffff;
+    border: 2px solid #211f30;
+    border-radius: clamp(24px, 4vw, 36px);
+    padding: clamp(22px, 3.5vw, 34px);
+    width: 100%;
+    max-width: min(440px, 94vw);
+    box-shadow: 6px 6px 0px #dcdad7;
+    text-align: center;
+}
+
+.signup-logo {
+    width: min(200px, 58%);
+    height: auto;
+    margin: 0 auto 8px;
+    display: block;
+    mix-blend-mode: multiply;
+}
+
+.signup-card h2 {
+    font-size: clamp(22px, 2.8vw, 27px);
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: #555555;
+    font-size: clamp(13px, 1.4vw, 15px);
+    margin-bottom: 18px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 13px;
+}
+
+.input-group label {
+    font-weight: 600;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #211f30;
+    border-radius: 10px;
+    padding: 10px 12px;
+    gap: 10px;
+    background-color: #ffffff;
+}
+
+.input-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: clamp(13px, 1.4vw, 15px);
+    background: transparent;
+    color: #211f30;
+}
+
+.eye-icon {
+    cursor: pointer;
+    user-select: none;
+}
+
+.error-msg {
+    display: none;
+    color: #c92a2a;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.error-msg.show {
+    display: block;
+}
+
+.btn-signup {
+    width: 100%;
+    background-color: #211f30;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    padding: clamp(11px, 1.4vw, 14px) 24px;
+    font-size: clamp(14px, 1.5vw, 16px);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-signup:hover {
+    background-color: #35324d;
+    transform: scale(1.03);
+}
+
+.btn-signup:active {
+    transform: scale(0.98);
+}
+
+.login-redirect {
+    margin-top: 12px;
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+.link-blue {
+    color: #3b49df;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-blue:hover {
+    text-decoration: underline;
+}
