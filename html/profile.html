@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVORA - Profile & Orders</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+    <header class="navbar">
+        <img src="../images/logo/avora.png" alt="AVORA" class="nav-logo" onclick="window.location.href='products.html'">
+        <div class="nav-links">
+            <a href="cart.html" class="nav-item">🛒 Cart (<span id="nav-cart-count">0</span>)</a>
+            <span>|</span>
+            <a href="profile.html" class="nav-item">Profile</a>
+            <span>|</span>
+            <span onclick="openLogoutModal()" class="nav-item">Logout ➔</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>My Profile</h1>
+        <p class="subtitle">Account details and checked out orders.</p>
+
+        <section class="profile-card">
+            <div class="avatar-wrapper">
+                <div class="profile-avatar" id="profile-avatar-box">
+                    <span id="profile-initial">A</span>
+                    <img id="profile-avatar-img" src="" alt="Profile Picture" class="avatar-img" style="display: none;">
+                </div>
+                <label for="avatar-upload" class="btn-change-pic">Change Photo</label>
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
+            </div>
+
+            <div class="profile-details">
+                <h2 id="profile-name">User Name</h2>
+                <p id="profile-handle" class="profile-handle">@username</p>
+                <p id="profile-email" class="profile-email">user@avora.ph</p>
+                <span class="profile-tag">AVORA Member</span>
+            </div>
+        </section>
+
+        <h2 class="section-heading">Order History</h2>
+        <div id="orders-container" class="orders-list"></div>
+    </main>
+
+    <div id="logout-modal" class="modal-backdrop">
+        <div class="modal-box">
+            <h3>Logout?</h3>
+            <p>Are you sure you want to log out? Your current cart items will be cleared.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-back" onclick="closeLogoutModal()">Back</button>
+                <button type="button" class="btn-modal-sure" onclick="confirmLogout()">Sure</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/profile.js"></script>
+</body>
+</html>

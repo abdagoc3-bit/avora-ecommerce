@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVORA - Products</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/products.css">
+</head>
+<body>
+    <header class="navbar">
+        <img src="../images/logo/avora.png" alt="AVORA" class="nav-logo" onclick="window.location.href='products.html'">
+        <div class="nav-links">
+            <a href="cart.html" class="nav-item">🛒 Cart (<span id="nav-cart-count">0</span>)</a>
+            <span>|</span>
+            <a href="profile.html" class="nav-item">Profile</a>
+            <span>|</span>
+            <span onclick="openLogoutModal()" class="nav-item">Logout ➔</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="shop-page-grid">
+            <aside class="sidebar">
+                <div class="filter-group">
+                    <h3>CATEGORIES</h3>
+                    <div id="category-checkboxes" class="checkbox-list"></div>
+                </div>
+
+                <hr class="sidebar-divider">
+
+                <div class="filter-group">
+                    <h3>PRICE</h3>
+                    <div class="price-inputs">
+                        <input type="number" id="min-price" placeholder="₱ Min" min="0" oninput="renderShop()">
+                        <span>-</span>
+                        <input type="number" id="max-price" placeholder="₱ Max" min="0" oninput="renderShop()">
+                    </div>
+                    <button type="button" class="btn-reset" onclick="resetFilters()">Reset Filters</button>
+                </div>
+            </aside>
+
+            <section class="products-main">
+                <div class="products-header-bar">
+                    <h1>Products</h1>
+                    <div class="sort-box">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select" onchange="renderShop()">
+                            <option value="default">Default</option>
+                            <option value="low-high">Price: Low to High</option>
+                            <option value="high-low">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="products-sections"></div>
+            </section>
+        </div>
+    </main>
+
+    <button class="btn-get-started sticky-checkout-bar" onclick="window.location.href='cart.html'">
+        Checkout (<span id="sticky-cart-count">0</span>)
+    </button>
+
+    <div id="logout-modal" class="modal-backdrop">
+        <div class="modal-box">
+            <h3>Logout?</h3>
+            <p>Are you sure you want to log out? Your current cart items will be cleared.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-back" onclick="closeLogoutModal()">Back</button>
+                <button type="button" class="btn-modal-sure" onclick="confirmLogout()">Sure</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/products.js"></script>
+</body>
+</html>

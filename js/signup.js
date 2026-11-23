@@ -48,6 +48,16 @@ function handleSignup(event) {
     }
 
     if (isValid) {
+        const emailPrefix = emailValue.split('@')[0] || fullnameValue;
+        const cleanHandle = '@' + emailPrefix.toLowerCase().replace(/[^a-z0-9._]/g, '');
+
+        localStorage.setItem('avora_user', JSON.stringify({
+            fullname: fullnameValue,
+            handle: cleanHandle,
+            email: emailValue,
+            avatar: ''
+        }));
+
         alert('Account created successfully! Redirecting to Sign In.');
         window.location.href = 'login.html';
     }

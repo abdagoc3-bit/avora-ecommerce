@@ -29,7 +29,18 @@ function handleLogin(event) {
     }
 
     if (isValid) {
-        window.location.href = 'categories.html';
+        const existingProfile = JSON.parse(localStorage.getItem('avora_user')) || {};
+        const emailPrefix = emailValue.split('@')[0] || 'shopper';
+        const cleanHandle = '@' + emailPrefix.toLowerCase().replace(/[^a-z0-9._]/g, '');
+
+        localStorage.setItem('avora_user', JSON.stringify({
+            fullname: existingProfile.fullname || emailPrefix,
+            handle: existingProfile.handle || cleanHandle,
+            email: emailValue,
+            avatar: existingProfile.avatar || ''
+        }));
+
+        window.location.href = 'products.html';
     }
 }
 

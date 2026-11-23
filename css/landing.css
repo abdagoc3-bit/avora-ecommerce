@@ -1,7 +1,7 @@
 .hero-logo {
     display: block;
-    width: 100%;
-    max-width: min(820px, 92vw);
+    width: min(820px, 92vw);
+    max-width: 92vw;
     max-height: 68dvh;
     height: auto;
     object-fit: contain;
