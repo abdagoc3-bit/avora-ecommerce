@@ -29,7 +29,9 @@ function renderProfileInfo() {
     const avatarImg = document.getElementById('profile-avatar-img');
 
     if (nameEl) nameEl.innerText = user.fullname;
-    if (handleEl) handleEl.innerText = user.handle;
+    if (handleEl) {
+        handleEl.style.display = 'none';
+    }
 
     if (emailEl) {
         if (user.email) {
@@ -67,45 +69,94 @@ function handleAvatarChange(event) {
     reader.readAsDataURL(file);
 }
 
-function renderOrders() {
+async function renderOrders() {
     const container = document.getElementById('orders-container');
     if (!container) return;
 
-    const orders = getOrders();
-    container.innerHTML = '';
+    const user = getUserProfile();
+    container.innerHTML = '<p>Loading orders...</p>';
 
-    if (orders.length === 0) {
-        container.innerHTML = '<p>No checked out orders yet. Start shopping in <a href="products.html" style="color:#211f30; font-weight:600;">Products</a>.</p>';
-        return;
-    }
+    try {
+        const query = user.fullname && user.fullname !== 'User'
+            ? `?customerName=${encodeURIComponent(user.fullname)}`
+            : '';
+        const response = await fetch(`http://localhost:3000/api/orders${query}`);
+        const result = await response.json();
+        const orders = Array.isArray(result) ? result : (result.data || []);
 
-    orders.forEach(order => {
-        const itemsHTML = order.items.map(item => `
-            <li>• ${item.name} (${item.color}) — ₱${item.price} x ${item.qty} = <strong>₱${item.price * item.qty}</strong></li>
-        `).join('');
+        container.innerHTML = '';
 
-        container.innerHTML += `
-            <div class="order-card">
-                <div class="order-top">
-                    <div>
-                        <h3>Order #${order.orderId}</h3>
-                        <p class="order-meta">Date: ${order.date} • ${order.time}</p>
-                        <p class="order-meta">Payment Method: <strong>${order.paymentMethod}</strong></p>
+        if (orders.length === 0) {
+            container.innerHTML = '<p>No checked out orders yet. Start shopping in <a href="products.html" style="color:#211f30; font-weight:600;">Products</a>.</p>';
+            return;
+        }
+
+        orders.forEach(order => {
+            const items = order.items || [];
+            const totalItems = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+            const createdDate = order.createdAt ? new Date(order.createdAt) : new Date();
+            const dateStr = createdDate.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = createdDate.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+            const status = order.status || 'Checked Out';
+
+            const itemsHTML = items.map(item => {
+                const colorText = item.color && item.color !== 'Standard' ? ` (${item.color})` : '';
+                return `<li>• ${item.name}${colorText} — ₱${item.price} x ${item.qty} = <strong>₱${item.price * item.qty}</strong></li>`;
+            }).join('');
+
+            const nonCancellableStatuses = ['Checked Out', 'Approved', 'Processing', 'Shipped'];
+            const cancelBtnHTML = !nonCancellableStatuses.includes(status)
+                ? `<button onclick="cancelOrder('${order.orderId}')" style="margin-top: 10px; padding: 6px 12px; background: #fff; color: #b91c1c; border: 1px solid #b91c1c; border-radius: 6px; cursor: pointer; font-size: 13px;">Cancel Order</button>`
+                : '';
+
+            container.innerHTML += `
+                <div class="order-card">
+                    <div class="order-top">
+                        <div>
+                            <h3>Order #${order.orderId}</h3>
+                            <p class="order-meta">Date: ${dateStr} • ${timeStr}</p>
+                            <p class="order-meta">Payment Method: <strong>${order.paymentMethod}</strong></p>
+                        </div>
+                        <span class="order-badge">${status}</span>
                     </div>
-                    <span class="order-badge">Checked Out</span>
-                </div>
 
-                <ul class="order-items-list">
-                    ${itemsHTML}
-                </ul>
+                    <ul class="order-items-list">
+                        ${itemsHTML}
+                    </ul>
 
-                <div class="order-bottom">
-                    <span>Total Items: <strong>${order.totalItems}</strong></span>
-                    <span class="order-total">Total: ₱${order.totalPrice}</span>
+                    <div class="order-bottom">
+                        <span>Total Items: <strong>${totalItems}</strong></span>
+                        <span class="order-total">Total: ₱${order.totalPrice}</span>
+                    </div>
+                    ${cancelBtnHTML}
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        container.innerHTML = '<p>Unable to load orders from the server. Please make sure the backend is running.</p>';
+    }
+}
+
+async function cancelOrder(orderId) {
+    if (!confirm(`Are you sure you want to cancel Order #${orderId}?`)) return;
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            alert('Failed to cancel order.');
+            return;
+        }
+
+        alert(`Order #${orderId} cancelled.`);
+        renderOrders();
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        alert('Unable to connect to the server.');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

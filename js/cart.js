@@ -64,7 +64,7 @@ function renderCart() {
     document.getElementById('summary-total-price').innerText = `₱${totalPrice}`;
 }
 
-function checkout() {
+async function checkout() {
     const cart = getCart();
     if (cart.length === 0) {
         alert("Your cart is empty! Please add items first.");
@@ -72,24 +72,41 @@ function checkout() {
     }
 
     const paymentMethod = document.getElementById('payment-method').value;
-    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const now = new Date();
+    const savedUser = JSON.parse(localStorage.getItem('avora_user')) || {};
+    const customerName = savedUser.fullname || 'Sophia Dagoc';
 
-    const newOrder = {
-        orderId: "AVR-" + Math.floor(100000 + Math.random() * 900000),
-        date: now.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }),
-        time: now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }),
+    const payload = {
+        customerName: customerName,
         paymentMethod: paymentMethod,
-        totalItems: totalItems,
-        totalPrice: totalPrice,
-        items: cart
+        items: cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+            color: item.color || 'Standard'
+        }))
     };
 
-    saveOrder(newOrder);
-    saveCart([]);
-    alert("Order placed successfully! You can view it in your Profile.");
-    window.location.href = 'profile.html';
+    try {
+        const response = await fetch('http://localhost:3000/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Failed to place order.");
+            return;
+        }
+
+        saveCart([]);
+        alert("Order placed successfully! You can view it in your Profile.");
+        window.location.href = 'profile.html';
+    } catch (error) {
+        console.error('Checkout error:', error);
+        alert("Hindi makakonekta sa server. Siguraduhing naka-run ang node server.js.");
+    }
 }
 
 document.addEventListener('DOMContentLoaded', renderCart);

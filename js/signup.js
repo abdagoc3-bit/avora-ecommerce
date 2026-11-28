@@ -1,4 +1,4 @@
-function handleSignup(event) {
+async function handleSignup(event) {
     event.preventDefault();
 
     const fullnameInput = document.getElementById('fullname');
@@ -51,15 +51,38 @@ function handleSignup(event) {
         const emailPrefix = emailValue.split('@')[0] || fullnameValue;
         const cleanHandle = '@' + emailPrefix.toLowerCase().replace(/[^a-z0-9._]/g, '');
 
-        localStorage.setItem('avora_user', JSON.stringify({
-            fullname: fullnameValue,
-            handle: cleanHandle,
-            email: emailValue,
-            avatar: ''
-        }));
+        try {
+            const response = await fetch('http://localhost:3000/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullname: fullnameValue,
+                    email: emailValue,
+                    password: passwordValue
+                })
+            });
 
-        alert('Account created successfully! Redirecting to Sign In.');
-        window.location.href = 'login.html';
+            const result = await response.json();
+
+            if (!response.ok) {
+                emailError.textContent = result.message || 'Unable to create account.';
+                emailError.classList.add('show');
+                return;
+            }
+
+            localStorage.setItem('avora_user', JSON.stringify({
+                fullname: fullnameValue,
+                handle: cleanHandle,
+                email: emailValue,
+                avatar: ''
+            }));
+
+            alert('Account created successfully! Redirecting to Sign In.');
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Signup error:', error);
+            alert('Hindi makakonekta sa server. Siguraduhing naka-run ang node server.js.');
+        }
     }
 }
 

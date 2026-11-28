@@ -1,4 +1,4 @@
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
 
     const emailInput = document.getElementById('email');
@@ -29,18 +29,43 @@ function handleLogin(event) {
     }
 
     if (isValid) {
-        const existingProfile = JSON.parse(localStorage.getItem('avora_user')) || {};
-        const emailPrefix = emailValue.split('@')[0] || 'shopper';
-        const cleanHandle = '@' + emailPrefix.toLowerCase().replace(/[^a-z0-9._]/g, '');
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: emailValue,
+                    password: passwordValue
+                })
+            });
 
-        localStorage.setItem('avora_user', JSON.stringify({
-            fullname: existingProfile.fullname || emailPrefix,
-            handle: existingProfile.handle || cleanHandle,
-            email: emailValue,
-            avatar: existingProfile.avatar || ''
-        }));
+            const result = await response.json();
 
-        window.location.href = 'products.html';
+            if (!response.ok) {
+                passwordError.textContent = result.message || 'Invalid email or password.';
+                passwordError.classList.add('show');
+                return;
+            }
+
+            const existingProfile = JSON.parse(localStorage.getItem('avora_user')) || {};
+            const resolvedName = (result.user && result.user.fullname) || existingProfile.fullname || emailValue.split('@')[0] || 'shopper';
+            const emailPrefix = emailValue.split('@')[0] || 'shopper';
+            const cleanHandle = '@' + emailPrefix.toLowerCase().replace(/[^a-z0-9._]/g, '');
+
+            localStorage.setItem('avora_user', JSON.stringify({
+                fullname: resolvedName,
+                handle: existingProfile.handle || cleanHandle,
+                email: (result.user && result.user.email) || emailValue,
+                avatar: existingProfile.avatar || '',
+                token: result.token || ''
+            }));
+
+            window.location.href = 'products.html';
+        } catch (error) {
+            console.error('Login error:', error);
+            passwordError.textContent = 'Hindi makakonekta sa server. Siguraduhing naka-run ang node server.js.';
+            passwordError.classList.add('show');
+        }
     }
 }
 
